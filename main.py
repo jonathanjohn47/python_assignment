@@ -11,73 +11,57 @@ set and the ideal function by a factor of sqrt(2)."""
 class Database:
     def find_sum_of_least_squares(self, x, y):
         sum = 0
-        for i in range(len(x)):
-            sum += (x[i] - y[i]) ** 2
+        for i, j in zip(x, y):
+            sum += (i - j) ** 2
         return sum
 
     def find_least_squares(self, x, y):
         least_squares = []
-        for i in range(len(x)):
-            least_squares.append((x[i] - y[i]) ** 2)
+        for i, j in zip(x, y):
+            least_squares.append((i - j) ** 2)
         return least_squares
 
     def find_deviation(self, x, y):
         deviation = []
-        for i in range(len(x)):
-            deviation.append(x[i] - y[i])
+        for i, j in zip(x, y):
+            deviation.append(i - j)
         return deviation
 
 
 class Train(Database):
     def load_training_data(self):
         train = pandas.read_csv("dataset/train.csv")
-        columns = []
-        for i in range(train.shape[1]):
-            this_column = []
-            for j in range(train.shape[0]):
-                this_column.append(train.iloc[j, i])
-            columns.append(this_column)
-        return columns
+        return train
 
 
 class Test(Database):
     def load_test_data(self):
         test = pandas.read_csv("dataset/test.csv")
-        columns = []
-        for i in range(test.shape[1]):
-            this_column = []
-            for j in range(test.shape[0]):
-                this_column.append(test.iloc[j, i])
-            columns.append(this_column)
-        return columns
+        return test
 
 
 class Ideal(Database):
     def load_ideal_data(self):
         ideal = pandas.read_csv("dataset/ideal.csv")
-        columns = []
-        for i in range(ideal.shape[1]):
-            this_column = []
-            for j in range(ideal.shape[0]):
-                this_column.append(ideal.iloc[j, i])
-            columns.append(this_column)
-        return columns
+        return ideal
 
 
-def find_ideal(x, list_of_y):
+def find_ideal(x, y):
     least_squares = []
     database = Database()
-    for y in list_of_y:
-        least_square = database.find_sum_of_least_squares(x, y)
-        least_squares.append(least_square)
-    least_four_squares = sorted(least_squares)[:4]
+    for i in range(len(y.columns)):
+        least_squares.append(database.find_sum_of_least_squares(x, y.iloc[:, i]))
+    first_four_least_squares = sorted(least_squares)[:4]
     indices = []
-    for least_four_square in least_four_squares:
-        indices.append(least_squares.index(least_four_square))
-    sorted_y = []
-    for index in indices:
-        sorted_y.append(list_of_y[index])
-    return sorted_y
+    for i in first_four_least_squares:
+        indices.append(least_squares.index(i))
+    ideal_functions = []
+    for i in indices:
+        ideal_functions.append(y.iloc[:, i])
+
+    ideal_functions = pandas.DataFrame(ideal_functions).transpose()
+    ideal_functions.columns = ['y1', 'y2', 'y3', 'y4']
+    return ideal_functions
 
 
 if __name__ == "__main__":
@@ -92,7 +76,7 @@ if __name__ == "__main__":
     ideal_data = ideal.load_ideal_data()
 
     database = Database()
+
     # Finding ideal functions
-
-    ideal_functions = find_ideal(train_data[1], ideal_data)
-
+    ideal_functions = find_ideal(train_data.iloc[:, 1], ideal_data)
+    print(ideal_functions)
