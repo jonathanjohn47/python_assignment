@@ -1,5 +1,6 @@
 import sqlalchemy as db
 import pandas
+import math
 
 """You need to write a program using Python to choose the best four ideal functions from a set of fifty functions based on how well they fit the training data. 
 Then you must use the test data to determine whether each point can be assigned to the four chosen functions, and if so, 
@@ -79,4 +80,37 @@ if __name__ == "__main__":
 
     # Finding ideal functions
     ideal_functions = find_ideal(train_data.iloc[:, 1], ideal_data)
-    print(ideal_functions)
+
+    # Finding deviation between training and ideal functions
+    deviation = []
+    for i in range(len(ideal_functions.columns)):
+        deviation.append(database.find_deviation(train_data.iloc[:, 1], ideal_functions.iloc[:, i]))
+    deviation = pandas.DataFrame(deviation).transpose()
+
+    # Finding maximum deviation
+    absolute_deviation = deviation.abs()
+    maximum_deviation = absolute_deviation.max().max()
+
+    # Calculating sqrt(2) * maximum deviation
+    sqrt_2 = math.sqrt(2)
+    sqrt_2_maximum_deviation = sqrt_2 * maximum_deviation
+
+    # Finding the least squares between test and ideal functions
+    least_squares = []
+    for i in range(len(ideal_functions.columns)):
+        least_squares.append(database.find_least_squares(test_data.iloc[:, 1], ideal_functions.iloc[:, i]))
+
+    least_squares = pandas.DataFrame(least_squares).transpose()
+
+    # Checking which column in the least squares has value greater than sqrt(2) * maximum deviation
+    least_squares_not_exceeding_sqrt_2_maximum_deviation = []
+    for i in range(len(least_squares.columns)):
+        if least_squares.iloc[:, i].max() <= sqrt_2_maximum_deviation:
+            least_squares_not_exceeding_sqrt_2_maximum_deviation.append(least_squares.iloc[:, i])
+    least_squares_not_exceeding_sqrt_2_maximum_deviation = pandas.DataFrame(
+        least_squares_not_exceeding_sqrt_2_maximum_deviation).transpose()
+
+    if len(least_squares_not_exceeding_sqrt_2_maximum_deviation) == 0:
+        print("No function can be chosen")
+    else:
+        print("The functions that can be chosen are:")
