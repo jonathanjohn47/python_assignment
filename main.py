@@ -40,23 +40,22 @@ class Ideal(Database):
         self.ideal = pandas.read_csv("dataset/ideal.csv")
         return self.ideal
 
+    def find_ideal(self, x):
+        least_squares = []
+        database = Database()
+        for i in range(len(self.ideal.columns)):
+            least_squares.append(database.find_sum_of_least_squares(x, self.ideal.iloc[:, i]))
+        first_four_least_squares = sorted(least_squares)[:4]
+        indices = []
+        for i in first_four_least_squares:
+            indices.append(least_squares.index(i))
+        ideal_functions = []
+        for i in indices:
+            ideal_functions.append(self.ideal.iloc[:, i])
 
-def find_ideal(x, y):
-    least_squares = []
-    database = Database()
-    for i in range(len(y.columns)):
-        least_squares.append(database.find_sum_of_least_squares(x, y.iloc[:, i]))
-    first_four_least_squares = sorted(least_squares)[:4]
-    indices = []
-    for i in first_four_least_squares:
-        indices.append(least_squares.index(i))
-    ideal_functions = []
-    for i in indices:
-        ideal_functions.append(y.iloc[:, i])
-
-    ideal_functions = pandas.DataFrame(ideal_functions).transpose()
-    ideal_functions.columns = ['y1', 'y2', 'y3', 'y4']
-    return ideal_functions
+        ideal_functions = pandas.DataFrame(ideal_functions).transpose()
+        ideal_functions.columns = ['y1', 'y2', 'y3', 'y4']
+        return ideal_functions
 
 
 if __name__ == "__main__":
@@ -73,7 +72,7 @@ if __name__ == "__main__":
     database = Database()
 
     # Finding ideal functions
-    ideal_functions = find_ideal(train_data.iloc[:, 1], ideal_data)
+    ideal_functions = ideal.find_ideal(train_data.iloc[:, 1])
 
     # Finding deviation between training and ideal functions
     deviation_between_training_and_ideal = []
