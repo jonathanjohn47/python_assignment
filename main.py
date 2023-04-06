@@ -1,4 +1,5 @@
 import pandas
+import numpy as np
 import math
 
 """You need to write a program using Python to choose the best four ideal functions from a set of fifty functions based on how well they fit the training data. 
@@ -10,13 +11,26 @@ set and the ideal function by a factor of sqrt(2)."""
 
 class Database:
     def find_sum_of_least_squares(self, x, y):
-        return sum((x - y) ** 2)
+        x = np.array(x)
+        y = np.array(y)
+        difference = np.subtract(x, y)
+        square = np.square(difference)
+        sum = np.sum(square)
+
+        return sum
 
     def find_least_squares(self, x, y):
-        return (x - y) ** 2
+        x = np.array(x)
+        y = np.array(y)
+        difference = np.subtract(x, y)
+        square = np.square(difference)
+        return pandas.DataFrame(square)
 
     def find_deviation(self, x, y):
-        return x - y
+        x = np.array(x)
+        y = np.array(y)
+        difference = np.subtract(x, y)
+        return pandas.DataFrame(difference)
 
 
 class Train(Database):
@@ -59,48 +73,46 @@ class Ideal(Database):
 
 
 if __name__ == "__main__":
-    # Creating instances of train, test and ideal classes
+
+    """Creating instances of train, test and ideal classes"""
     train = Train()
     test = Test()
     ideal = Ideal()
 
-    # Loading data
+    """Loading data"""
     train_data = train.load_training_data()
     test_data = test.load_test_data()
     ideal_data = ideal.load_ideal_data()
 
     database = Database()
 
-    # Finding ideal functions
+    """Finding ideal functions"""
     ideal_functions = ideal.find_ideal(train_data.iloc[:, 1])
 
-    # Finding deviation between training and ideal functions
+    """Finding deviation between training and ideal functions"""
     deviation_between_training_and_ideal = []
     for i in range(len(ideal_functions.columns)):
         deviation_between_training_and_ideal.append(
             database.find_deviation(train_data.iloc[:, 1], ideal_functions.iloc[:, i]))
     deviation_between_training_and_ideal = pandas.DataFrame(deviation_between_training_and_ideal).transpose()
 
-    # Finding maximum deviation
+    """Finding maximum deviation"""
     absolute_deviation = deviation_between_training_and_ideal.abs()
     maximum_deviation = absolute_deviation.max().max()
 
-    # Calculating sqrt(2) * maximum deviation
+    """Calculating sqrt(2) * maximum deviation"""
     sqrt_2 = math.sqrt(2)
     sqrt_2_maximum_deviation = sqrt_2 * maximum_deviation
 
-    # Finding deviation between test and ideal functions
+    """Finding deviation between test and ideal functions"""
     deviation_between_test_and_ideal = pandas.DataFrame(test_data.iloc[:, 0])
     for i in range(len(ideal_functions.columns)):
         ideal_function = ideal_functions.iloc[:, i]
-        print(ideal_function)
         test_data_y = test_data.iloc[:, 1]
         deviation_between_test_and_ideal['Deviation {}'.format(i + 1)] = database.find_deviation(test_data_y,
                                                                                                  ideal_function)
 
-    # Finding absolute deviation between test and ideal functions
+    """Finding absolute deviation between test and ideal functions"""
     absolute_deviation_between_test_and_ideal = deviation_between_test_and_ideal.abs()
     deviation_greater_than_sqrt_2_maximum_deviation = (
             absolute_deviation_between_test_and_ideal > sqrt_2_maximum_deviation).any()
-    print(sqrt_2_maximum_deviation)
-    print(deviation_greater_than_sqrt_2_maximum_deviation)
