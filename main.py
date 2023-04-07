@@ -57,7 +57,6 @@ if __name__ == "__main__":
 
     best_fit_values = pandas.DataFrame([x_values, y1_values, y2_values, y3_values, y4_values]).transpose()
     best_fit_values.columns = ['x', 'y1', 'y2', 'y3', 'y4']
-    print(best_fit_values)
 
     """Creating tables"""
     y1 = pandas.DataFrame([])
@@ -65,9 +64,15 @@ if __name__ == "__main__":
     y3 = pandas.DataFrame([])
     y4 = pandas.DataFrame([])
 
-    y1.columns = ['x', 'y', 'delta', 'ideal function']
-    y2.columns = ['x', 'y', 'delta', 'ideal function']
-    y3.columns = ['x', 'y', 'delta', 'ideal function']
-    y4.columns = ['x', 'y', 'delta', 'ideal function']
+    table_list = [y1, y2, y3, y4]
 
     """Filling tables"""
+    for i in range(1, 5):
+        if (best_fit_values > sqrt_2_maximum_deviation).any()[i]:
+            print('y' + str(i) + ' is not in range')
+        else:
+            table_list[i-1]['x'] = test_data.iloc[:, 0]
+            table_list[i-1]['y'] = test_data.iloc[:, 1]
+            table_list[i-1]['delta'] = database.find_deviation(test_data.iloc[:, 1], best_fit_values.iloc[:, i])
+            table_list[i-1]['ideal function'] = best_fit_values.iloc[:, i]
+            print(table_list[i-1])
