@@ -15,9 +15,9 @@ class Database:
         y = np.array(y)
         difference = np.subtract(x, y)
         square = np.square(difference)
-        sum = np.sum(square)
+        sumOfSquares = np.sum(square)
 
-        return sum
+        return sumOfSquares
 
     def find_least_squares(self, x, y):
         x = np.array(x)
@@ -57,8 +57,9 @@ class Ideal(Database):
     def find_ideal(self, x):
         least_squares = []
         database = Database()
-        for i in range(len(self.ideal.columns)):
-            least_squares.append(database.find_sum_of_least_squares(x, self.ideal.iloc[:, i]))
+        least_squares = [database.find_sum_of_least_squares(x, self.ideal.iloc[:, i]) for i in
+                         range(len(self.ideal.columns))]
+
         first_four_least_squares = sorted(least_squares)[:4]
         indices = []
         for i in first_four_least_squares:
@@ -87,14 +88,16 @@ if __name__ == "__main__":
     database = Database()
 
     """Finding ideal functions"""
+
     ideal_functions = ideal.find_ideal(train_data.iloc[:, 1])
+    ideal_functions.insert(0, 'x', train_data.iloc[:, 0])
 
     """Finding deviation between training and ideal functions"""
-    deviation_between_training_and_ideal = []
-    for i in range(len(ideal_functions.columns)):
-        deviation_between_training_and_ideal.append(
-            database.find_deviation(train_data.iloc[:, 1], ideal_functions.iloc[:, i]))
-    deviation_between_training_and_ideal = pandas.DataFrame(deviation_between_training_and_ideal).transpose()
+    deviation_between_training_and_ideal = pandas.DataFrame([])
+    for column in ideal_functions.columns:
+        deviation_between_training_and_ideal[column] = database.find_deviation(train_data.iloc[:, 1],
+                                                                               ideal_functions[column])
+    deviation_between_training_and_ideal = pandas.DataFrame(deviation_between_training_and_ideal)
 
     """Finding maximum deviation"""
     absolute_deviation = deviation_between_training_and_ideal.abs()
@@ -104,15 +107,26 @@ if __name__ == "__main__":
     sqrt_2 = math.sqrt(2)
     sqrt_2_maximum_deviation = sqrt_2 * maximum_deviation
 
-    """Finding deviation between test and ideal functions"""
-    deviation_between_test_and_ideal = pandas.DataFrame(test_data.iloc[:, 0])
-    for i in range(len(ideal_functions.columns)):
-        ideal_function = ideal_functions.iloc[:, i]
-        test_data_y = test_data.iloc[:, 1]
-        deviation_between_test_and_ideal['Deviation {}'.format(i + 1)] = database.find_deviation(test_data_y,
-                                                                                                 ideal_function)
+    """Finding best fit values for test data in ideal functions"""
+    x_values = np.array([])
+    y1_values = np.array([])
+    y2_values = np.array([])
+    y3_values = np.array([])
+    y4_values = np.array([])
 
-    """Finding absolute deviation between test and ideal functions"""
-    absolute_deviation_between_test_and_ideal = deviation_between_test_and_ideal.abs()
-    deviation_greater_than_sqrt_2_maximum_deviation = (
-            absolute_deviation_between_test_and_ideal > sqrt_2_maximum_deviation).any()
+    for t in test_data.iloc[:, 0]:
+        least_squares = np.array([])
+        for x in ideal_functions.iloc[:, 0]:
+            least_squares = np.append(least_squares, (x - t) ** 2)
+        index = np.argmin(least_squares)
+        x_values = np.append(x_values, ideal_functions.iloc[index, 0])
+        y1_values = np.append(y1_values, ideal_functions.iloc[index, 1])
+        y2_values = np.append(y2_values, ideal_functions.iloc[index, 2])
+        y3_values = np.append(y3_values, ideal_functions.iloc[index, 3])
+        y4_values = np.append(y4_values, ideal_functions.iloc[index, 4])
+
+    best_fit_values = pandas.DataFrame([x_values, y1_values, y2_values, y3_values, y4_values]).transpose()
+    best_fit_values.columns = ['x', 'y1', 'y2', 'y3', 'y4']
+    print(best_fit_values)
+
+    """Finding corresponding y values for x values in ideal functions"""
