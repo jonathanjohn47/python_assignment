@@ -24,6 +24,13 @@ class UnitTest(unittest.TestCase):
         for i in range(10):
             self.assertEqual(database.find_deviation(twos, ones).iloc[i, 0], 1)
 
+    def test_any_deviation_greater_than_threshold(self):
+        twos = pd.DataFrame(2 for i in range(10))
+        ones = pd.DataFrame(1 for i in range(10))
+        database = main.Database()
+        self.assertTrue(database.any_deviation_greater_than_threshold(twos, ones, 0))
+        self.assertFalse(database.any_deviation_greater_than_threshold(twos, ones, 2))
+
 
 if __name__ == "__main__":
     unittest.main()

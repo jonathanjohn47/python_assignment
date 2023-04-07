@@ -25,6 +25,13 @@ class Database:
         difference = np.subtract(x, y)
         return pandas.DataFrame(difference)
 
+    def any_deviation_greater_than_threshold(self, x, y, threshold):
+        x = np.array(x)
+        y = np.array(y)
+        difference = pandas.DataFrame(np.subtract(x, y))
+
+        return (difference > threshold).any().any()
+
 
 class Train(Database):
     def load_training_data(self):
@@ -48,18 +55,13 @@ class Ideal(Database):
         return self.ideal
 
     def find_ideal(self, x):
-        least_squares = []
         database = Database()
         least_squares = [database.find_sum_of_least_squares(x, self.ideal.iloc[:, i]) for i in
                          range(len(self.ideal.columns))]
 
         first_four_least_squares = sorted(least_squares)[:4]
-        indices = []
-        for i in first_four_least_squares:
-            indices.append(least_squares.index(i))
-        ideal_functions = []
-        for i in indices:
-            ideal_functions.append(self.ideal.iloc[:, i])
+        indices = [least_squares.index(i) for i in first_four_least_squares]
+        ideal_functions = [self.ideal.iloc[:, i] for i in indices]
 
         ideal_functions = pandas.DataFrame(ideal_functions).transpose()
         ideal_functions.columns = ['y1', 'y2', 'y3', 'y4']

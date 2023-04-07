@@ -18,7 +18,6 @@ if __name__ == "__main__":
     database = cl.Database()
 
     """Finding ideal functions"""
-
     ideal_functions = ideal.find_ideal(train_data.iloc[:, 1])
     ideal_functions.insert(0, 'x', train_data.iloc[:, 0])
 
@@ -45,9 +44,8 @@ if __name__ == "__main__":
     y4_values = np.array([])
 
     for t in test_data.iloc[:, 0]:
-        least_squares = np.array([])
-        for x in ideal_functions.iloc[:, 0]:
-            least_squares = np.append(least_squares, (x - t) ** 2)
+        least_squares = np.array([(x - t) ** 2 for x in ideal_functions.iloc[:, 0]])
+
         index = np.argmin(least_squares)
         x_values = np.append(x_values, ideal_functions.iloc[index, 0])
         y1_values = np.append(y1_values, ideal_functions.iloc[index, 1])
@@ -68,11 +66,12 @@ if __name__ == "__main__":
 
     """Filling tables"""
     for i in range(1, 5):
-        if (best_fit_values > sqrt_2_maximum_deviation).any()[i]:
+        if database.any_deviation_greater_than_threshold(best_fit_values.iloc[:, i], test_data.iloc[:, 1],
+                                                         sqrt_2_maximum_deviation):
             print('y' + str(i) + ' is not in range')
         else:
-            table_list[i-1]['x'] = test_data.iloc[:, 0]
-            table_list[i-1]['y'] = test_data.iloc[:, 1]
-            table_list[i-1]['delta'] = database.find_deviation(test_data.iloc[:, 1], best_fit_values.iloc[:, i])
-            table_list[i-1]['ideal function'] = best_fit_values.iloc[:, i]
-            print(table_list[i-1])
+            table_list[i - 1]['x'] = test_data.iloc[:, 0]
+            table_list[i - 1]['y'] = test_data.iloc[:, 1]
+            table_list[i - 1]['delta'] = database.find_deviation(test_data.iloc[:, 1], best_fit_values.iloc[:, i])
+            table_list[i - 1]['ideal function'] = best_fit_values.iloc[:, i]
+            print(table_list[i - 1])
