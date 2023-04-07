@@ -59,4 +59,15 @@ if __name__ == "__main__":
     best_fit_values.columns = ['x', 'y1', 'y2', 'y3', 'y4']
     print(best_fit_values)
 
-    """Finding corresponding y values for x values in ideal functions"""
+    """Creating tables"""
+    y1 = pandas.DataFrame([])
+    y2 = pandas.DataFrame([])
+    y3 = pandas.DataFrame([])
+    y4 = pandas.DataFrame([])
+
+    y1.columns = ['x', 'y', 'delta', 'ideal function']
+    y2.columns = ['x', 'y', 'delta', 'ideal function']
+    y3.columns = ['x', 'y', 'delta', 'ideal function']
+    y4.columns = ['x', 'y', 'delta', 'ideal function']
+
+    """Filling tables"""
