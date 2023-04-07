@@ -1,5 +1,5 @@
 import unittest
-import main
+import all_classes as main
 import pandas as pd
 
 
