@@ -2,6 +2,7 @@ import pandas
 import numpy as np
 import math
 import all_classes as cl
+import sql_classes as sql
 
 if __name__ == "__main__":
 
@@ -74,4 +75,13 @@ if __name__ == "__main__":
             table_list[i - 1]['y'] = test_data.iloc[:, 1]
             table_list[i - 1]['delta'] = database.find_deviation(test_data.iloc[:, 1], best_fit_values.iloc[:, i])
             table_list[i - 1]['ideal function'] = best_fit_values.iloc[:, i]
-            print(table_list[i - 1])
+
+            test = sql.DataSet('test_' + 'y' + str(i), table_list[i - 1])
+            test.execute_sql()
+
+    """Creating Database in SQLite"""
+    training = sql.DataSet(best_fit_values, 'training_data')
+    training.execute_sql()
+
+    ideal = sql.DataSet(ideal_data, 'ideal_functions')
+    ideal.execute_sql()
