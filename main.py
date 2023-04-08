@@ -76,7 +76,8 @@ if __name__ == "__main__":
             table_list[i - 1]['delta'] = database.find_deviation(test_data.iloc[:, 1], best_fit_values.iloc[:, i])
             table_list[i - 1]['ideal function'] = best_fit_values.iloc[:, i]
 
-            test = sql.DataSet('test_' + 'y' + str(i), table_list[i - 1])
+            """Saving tables to database"""
+            test = sql.DataSet('test_' + 'y' + str(i + 1), table_list[i - 1])
             test.execute_sql()
 
     """Creating Database in SQLite"""
