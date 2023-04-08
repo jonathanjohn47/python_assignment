@@ -29,6 +29,6 @@ class TrainingData():
 
         for i in range(len(self.x)):
             session.add(TrainingData(self.x[i], self.y1[i], self.y2[i], self.y3[i], self.y4[i]))
-            session.commit()
 
-
+        session.commit()
+        session.close()
