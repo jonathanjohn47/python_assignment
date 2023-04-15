@@ -1,2 +1,12 @@
 Git Address:
 https://github.com/jonathanjohn47/python_assignment.git
+
+git commands:
+git clone https://github.com/jonathanjohn47/python_assignment.git
+cd python_assignment
+git checkout develop
+git add .
+git add path/to/your/file
+git commit -m "Added a new function for XYZ feature"
+git checkout -b new-feature-branch
+git push origin new-feature-branch
